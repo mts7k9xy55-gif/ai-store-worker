@@ -17,7 +17,7 @@ jobs:
           node-version: '20'
           
       - name: Install dependencies
-        run: cd ai-store-worker && npm install
+        run: npm install
         
       - name: Find Gaps and Build Spec
         id: build
@@ -25,7 +25,7 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
         run: |
-          SPEC=$(npx ts-node ai-store-worker/scripts/find-gaps.ts)
+          SPEC=$(npx ts-node scripts/find-gaps.ts)
           echo "spec=$SPEC" >> $GITHUB_OUTPUT
 
       - name: AI Codegen and PR
