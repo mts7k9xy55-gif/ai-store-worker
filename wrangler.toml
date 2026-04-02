@@ -1,0 +1,14 @@
+name = "ai-store-worker"
+main = "src/index.ts"
+compatibility_date = "2024-04-02"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "ai-store-db"
+database_id = "db8d948f-bd91-4fa5-9e70-5cdf1d44f37e"
+
+[triggers]
+crons = ["0 * * * *"]
+
+[observability]
+enabled = true
