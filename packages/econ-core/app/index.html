@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Econ Intake</title>
+    <meta name="description" content="Econ founder intake prototype">
+    <link rel="stylesheet" href="../styles.css">
+    <script defer src="/config.js"></script>
+    <script defer src="/site.js"></script>
+  </head>
+  <body>
+    <div class="shell app-shell">
+      <header class="topbar">
+        <a class="brand" href="/">Econ</a>
+        <nav class="nav">
+          <a href="/">Offer</a>
+          <a href="/privacy/">Privacy</a>
+          <a href="/terms/">Terms</a>
+          <a href="/support/">Support</a>
+        </nav>
+      </header>
+
+      <main class="panel app-card">
+        <span class="eyebrow">Interactive Founder Intake</span>
+        <h1>よっす、Econ だよ。</h1>
+        <p class="prompt" id="prompt">まずは「誰に、何を売って、最初の1円を稼ぐか」から詰める。今の仮説をそのまま書いて。</p>
+
+        <label class="field-label" for="answer">回答</label>
+        <textarea id="answer" placeholder="例: B2B SaaS の購買が重い小規模チーム向けに、経理判断を速くするツールを売る"></textarea>
+
+        <div class="cta-row">
+          <button class="button button-primary" id="next-button" type="button">次へ</button>
+          <a class="button button-secondary" data-checkout-link href="#" target="_blank" rel="noreferrer">100円で early access</a>
+          <a class="button button-secondary" href="/delivery/">delivery packet へ</a>
+        </div>
+
+        <div class="summary" id="summary">回答を進めると、Econ が事業コアの要約を作る。</div>
+      </main>
+    </div>
+
+    <script>
+      const steps = [
+        {
+          key: "business_core",
+          prompt: "まずは『誰に、何を売って、最初の1円を稼ぐか』から詰める。今の仮説をそのまま書いて。"
+        },
+        {
+          key: "company_type",
+          prompt: "次。株式会社にするのか、合同会社にするのか。いまの直感を書いて。"
+        },
+        {
+          key: "capital_jpy",
+          prompt: "資本金はいくらで始めるつもりか。迷っているなら、なぜ迷っているかも書いて。"
+        },
+        {
+          key: "first_revenue_path",
+          prompt: "最後。最初の paid action は何にする。受託、pilot、early access、あるいは別の手か。"
+        }
+      ];
+
+      const state = {
+        business_core: "",
+        company_type: "",
+        capital_jpy: "",
+        first_revenue_path: ""
+      };
+
+      let current = 0;
+      const promptEl = document.getElementById("prompt");
+      const answerEl = document.getElementById("answer");
+      const summaryEl = document.getElementById("summary");
+      const nextButton = document.getElementById("next-button");
+
+      function renderSummary() {
+        const lines = [
+          `business_core: ${state.business_core || "未入力"}`,
+          `company_type: ${state.company_type || "未入力"}`,
+          `capital_jpy: ${state.capital_jpy || "未入力"}`,
+          `first_revenue_path: ${state.first_revenue_path || "未入力"}`
+        ];
+        localStorage.setItem("econIntakeState", JSON.stringify(state));
+        if (current >= steps.length) {
+          lines.push("");
+          lines.push("Econ summary:");
+          lines.push(`誰に何を売るか: ${state.business_core || "未入力"}`);
+          lines.push(`会社形態: ${state.company_type || "未入力"}`);
+          lines.push(`資本金: ${state.capital_jpy || "未入力"}`);
+          lines.push(`最初の paid action: ${state.first_revenue_path || "未入力"}`);
+          lines.push("");
+          lines.push("この要約を持って 100 円の early access を押さえると、最初の収益仮説が具体化しやすい。");
+        }
+        summaryEl.textContent = lines.join("\n");
+      }
+
+      function renderStep() {
+        if (current >= steps.length) {
+          promptEl.textContent = "ここまでで、Econ が最初の1円に必要な判断を一周した。必要なら要約を見て checkout に進んで。";
+          answerEl.value = "";
+          answerEl.disabled = true;
+          nextButton.disabled = true;
+          renderSummary();
+          return;
+        }
+        const step = steps[current];
+        promptEl.textContent = step.prompt;
+        answerEl.value = state[step.key] || "";
+        renderSummary();
+      }
+
+      nextButton.addEventListener("click", () => {
+        const step = steps[current];
+        const value = answerEl.value.trim();
+        if (!value) {
+          answerEl.focus();
+          return;
+        }
+        state[step.key] = value;
+        current += 1;
+        renderStep();
+      });
+
+      renderStep();
+    </script>
+  </body>
+</html>
