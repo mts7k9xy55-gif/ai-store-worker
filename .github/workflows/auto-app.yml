@@ -1,4 +1,4 @@
-name: Autonomous App Factory
+name: Autonomous App Factory (Gemini 3.1 Powered)
 
 on:
   schedule:
@@ -28,10 +28,10 @@ jobs:
           SPEC=$(npx ts-node scripts/find-gaps.ts)
           echo "spec=$SPEC" >> $GITHUB_OUTPUT
 
-      - name: AI Codegen and PR
+      - name: Gemini 3.1 Codegen and PR
         if: steps.build.outputs.spec != ''
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
-          # Use Gemini CLI to generate code and PR based on the spec
-          gcli code --prompt "${{ steps.build.outputs.spec }}" --run
+          # Gemini 3.1 の超知能を指定してコード生成を実行
+          gcli code --prompt "${{ steps.build.outputs.spec }}。Gemini 3.1 の最高品質な TypeScript コードを出力せよ。" --run
